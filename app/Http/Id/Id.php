@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
-namespace App\Domain;
+namespace App\Http\Id;
 
 use App\Domain\Exception\IdException;
+use App\Http\Interface\IdInterface;
 use Ramsey\Uuid\Uuid;
 use Webmozart\Assert\Assert as Assert;
 

@@ -34,9 +34,24 @@ Route::patch('/update-candidate/{id}', [
 ]);
 
 // user route
-Route::post('/user/{userId}', [
+Route::post('/user', [
   UserController::class,
   'createUser'
+]);
+
+Route::get('/user/{userId}', [
+  UserController::class,
+  'getUser'
+]);
+
+Route::delete('/user/{userId}', [
+  UserController::class,
+  'deleteUser'
+]);
+
+Route::get('/users', [
+  UserController::class,
+  'getUsers'
 ]);
 
 // role route

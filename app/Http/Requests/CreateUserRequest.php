@@ -23,10 +23,10 @@ class CreateUserRequest extends FormRequest
     {
         return [
             'firstName' => [
+                'string',
                 'required',
                 'min:2',
                 'max:15',
-                'string'
             ],
             'lastName' => [
                 'required',
@@ -43,15 +43,23 @@ class CreateUserRequest extends FormRequest
             ],
             'password' => [
                 'required',
-                'min:8',
                 'max:255',
-                'string'
+                'string',
+                'confirmed',
+                \Illuminate\Validation\Rules\Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
             ],
             'phone' => [
                 'required',
                 'min:8',
                 'max:25',
                 'string'
+            ],
+            'otp' => [
+                'required',
+                'integer'
             ],
             'roleId' => ['array' | 'uuid']
         ];

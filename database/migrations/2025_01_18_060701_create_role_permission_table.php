@@ -1,6 +1,6 @@
 <?php
 
-use App\Domain\Id\RoleId;
+use App\Http\Id\RoleId;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -28,8 +28,8 @@ return new class extends Migration
         Schema::dropIfExists('role_permission');
     }
 
-    public function roleId(): RoleId
-    {
-        return RoleId::fromString()
-    }
+    // public function roleId(): RoleId
+    // {
+    //     return RoleId::fromString();
+    // }
 };

@@ -2,49 +2,50 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Id\UserId;
+use App\Http\Id\UserId;
+use App\Http\Requests\CreateUserRequest;
 use App\Http\ResponseInterface\ApiResponse;
+use App\Http\ResponseInterface\StatusCode;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use LaravelDoctrine\ORM\Facades\EntityManager;
-use Psr\Http\Message\ServerRequestInterface;
 
-class UserController extends Controller
+class UserController
 {
-    public function createUser(ServerRequestInterface $request, EntityManager $repository): ApiResponse
+    public function createUser(CreateUserRequest $request)
     {
-        $userId = UserId::fromString($request->getAttribute('userId'));
-        $post = $request->getParsedBody();
-        $repository->persist(
-            User::createUser(
-                $userId,
-                $post
-            )
-        );
-
-        $repository->flush();
-        return new ApiResponse(200);
+        try {
+            $post = $request->all();
+            $user = User::createUser($post);
+            $user->save();
+            return ApiResponse::success('User created successfully', StatusCode::CREATED);
+        } catch (\Throwable $th) {
+            return ApiResponse::error('Error creating user', $th->getMessage(), StatusCode::BAD_REQUEST);
+        }
     }
 
-    public function getUser(ServerRequestInterface $request): JsonResponse
+    public function getUser(Request $request): JsonResponse
     {
         /** @var UserId */
-        $userId = UserId::fromString($request->getAttribute('userId'));
+        $userId = UserId::fromString($request->route('userId'));
         /** @var User */
-        $user = User::find($userId->toString());
+        $user = User::where(['id' => $userId->toString()])->first();
+
         return new JsonResponse($user->data());
     }
 
-    public function getUsers(ServerRequestInterface $request): JsonResponse
+    public function getUsers(Request $request): JsonResponse
     {
-        $query = $request->getQueryParams();
-        $criteria = $sort = $data = [];
+        $query = $request->getQueryString();
+        $criteria = $data = [];
         $limit = isset($query['limit']) ? intval($query['limit']) : 20;
         $skip = isset($query['skip']) ? intval($query['skip']) : 0;
 
-        /** @var User[] */
-        // $request->ge
-        $users = User::findBy($criteria, $sort, $limit, $skip);
+        if (isset($query['lastName'])) {
+            $criteria = array_merge($criteria, ['lastName' => $query['lastName']]);
+        }
+        $queryBuilder = User::query($criteria);
+        $users = $queryBuilder->skip($skip)->take($limit)->get();
         foreach ($users as $user) {
             $data[] = $user->data();
         }
@@ -54,5 +55,29 @@ class UserController extends Controller
                 'data' => $data
             ]
         );
+    }
+
+    public function updateUser(Request $request): JsonResponse
+    {
+        try {
+            $post = $request->all();
+            /** @var User */
+            $user = $request->user;
+            $user->updateUser($post);
+            return ApiResponse::success('User updated successfully', StatusCode::OK);
+        } catch (\Throwable $th) {
+            return ApiResponse::error('Error updating user', $th->getMessage(), StatusCode::BAD_REQUEST);
+        }
+    }
+
+    public function deleteUser(CreateUserRequest $request): JsonResponse
+    {
+        try {
+            $user = $request->user;
+            $request->delete($user);
+            return ApiResponse::success('User deleted successfully', StatusCode::OK);
+        } catch (\Throwable $th) {
+            return ApiResponse::error('Error deleting user', $th->getMessage(), StatusCode::BAD_REQUEST);
+        }
     }
 }
