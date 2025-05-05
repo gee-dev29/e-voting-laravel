@@ -78,6 +78,7 @@ class User extends Authenticatable implements MustVerifyEmail
         ]);
 
         $validatedData = $validator->validate();
+        // $user = user;
         $middleName = ucwords($validatedData['middleName']);
         // $user = 
     }
@@ -87,6 +88,21 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->roleIds = $roleIds;
     }
 
+    public function changePassword(array $post)
+    {
+        $validator = Validator::make($post, [
+            'password' => 'required|string',
+        ]);
+
+        $validatedData = $validator->validate();
+        $hashedPassword = Hash("sha256", $validatedData['password']);
+        $this->password = $hashedPassword;
+    }
+
+    public function password(): string
+    {
+        return $this->password;
+    }
 
     // public function createOTP(): void
     // {

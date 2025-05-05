@@ -80,4 +80,18 @@ class UserController
             return ApiResponse::error('Error deleting user', $th->getMessage(), StatusCode::BAD_REQUEST);
         }
     }
+
+    public function changeUserPassword(CreateUserRequest $request): JsonResponse
+    {
+        try {
+            //get the verified user from the check user middleware
+            /** @var User */
+            $user = $request->user;
+            $post = $request->all();
+            $user->changePassword($post);
+            return ApiResponse::success('User updated successfully', StatusCode::OK);
+        } catch (\Throwable $e) {
+            return ApiResponse::error('Error updating user', $e->getMessage(), StatusCode::BAD_REQUEST);
+        }
+    }
 }
