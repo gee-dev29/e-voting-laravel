@@ -26,11 +26,8 @@ class UserController
 
     public function getUser(Request $request): JsonResponse
     {
-        /** @var UserId */
-        $userId = UserId::fromString($request->route('userId'));
-        /** @var User */
-        $user = User::where(['id' => $userId->toString()])->first();
-
+        /** @var User $user */
+        $user = $request->attributes->get('user');
         return new JsonResponse($user->data());
     }
 

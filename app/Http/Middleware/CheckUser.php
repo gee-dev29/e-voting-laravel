@@ -22,10 +22,11 @@ class CheckUser
       }
     }
     $userId = UserId::fromString($userId);
-    $user = User::find(['id' => $userId->toString()]);
+    $user = User::find($userId->toString());
     if (!$user) {
       throw UserException::notFound();
     }
+    $request->attributes->set('user', $user);
     return $next($request);
   }
 }
