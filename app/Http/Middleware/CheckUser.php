@@ -14,15 +14,15 @@ class CheckUser
 {
   public function handle(Request $request, Closure $next): Response
   {
-    $userId = $request->attributes->get('userId');
+    $userId = $request->route('userId');
     if (!$userId) {
       $post = $request->post(['userId']);
+      $userId = $post['userId'];
       if (!$post) {
         throw UserException::UserIdRequired();
       }
-      $userIdString = $post['userId'];
     }
-    $userId = UserId::fromString($userIdString);
+    $userId = UserId::fromString($userId);
     $user = User::find(['id' => $userId->toString()]);
     if (!$user) {
       throw UserException::notFound();
