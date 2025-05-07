@@ -6,7 +6,6 @@ use App\Http\Exception\UserException;
 use App\Http\Id\UserId;
 use App\Models\User;
 use Closure;
-use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
