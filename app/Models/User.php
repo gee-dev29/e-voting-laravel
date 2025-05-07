@@ -69,7 +69,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return $user;
     }
 
-    public static function updateUser(array $post): void
+    public function updateUser(array $post): void
     {
         $validator = Validator::make($post, [
             'middleName' => 'required|string',
@@ -78,9 +78,12 @@ class User extends Authenticatable implements MustVerifyEmail
         ]);
 
         $validatedData = $validator->validate();
-        // $user = user;
-        $middleName = ucwords($validatedData['middleName']);
-        // $user = 
+
+        $this->middleName = ucwords($validatedData['middleName']);
+        $this->phone = $validatedData['phone'];
+        $this->roleIds = $validatedData['roleIds'];
+
+        $this->save();
     }
 
     public function addRoles(array $roleIds): void

@@ -54,12 +54,12 @@ class UserController
         );
     }
 
-    public function updateUser(Request $request): JsonResponse
+    public function updateUserDetails(Request $request): JsonResponse
     {
         try {
             $post = $request->all();
             /** @var User */
-            $user = $request->user;
+            $user = $request->attributes->get('user');
             $user->updateUser($post);
             return ApiResponse::success('User updated successfully', StatusCode::OK);
         } catch (\Throwable $th) {
@@ -70,7 +70,7 @@ class UserController
     public function deleteUser(CreateUserRequest $request): JsonResponse
     {
         try {
-            $user = $request->user;
+            $user = $request->attributes->get('user');
             $request->delete($user);
             return ApiResponse::success('User deleted successfully', StatusCode::OK);
         } catch (\Throwable $th) {

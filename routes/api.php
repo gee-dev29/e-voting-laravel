@@ -38,7 +38,7 @@ Route::middleware([
 ])->group(function () {
   Route::delete('/user/{userId}/delete', [UserController::class, 'deleteUser']);
   Route::get('/user/{userId}', [UserController::class, 'getUser']);
-  Route::patch('/user/{id}/update', [UserController::class, 'updateUser']);
+  Route::patch('/user/{id}/update', [UserController::class, 'updateUserDetails']);
   Route::patch('/user/{id}/change-user-password', [UserController::class, 'changeUserPassword']);
 });
 
