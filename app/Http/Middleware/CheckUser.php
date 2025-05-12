@@ -15,8 +15,8 @@ class CheckUser
   {
     $userId = $request->route('userId');
     if (!$userId) {
-      $post = $request->post(['userId']);
-      $userId = $post['userId'];
+      $post = $request->post();
+      $userId = $post['userId'] ?? null;
       if (!$post) {
         throw UserException::UserIdRequired();
       }

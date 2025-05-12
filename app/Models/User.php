@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Id\RoleId;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Illuminate\Support\Str;
@@ -17,7 +18,7 @@ use Webmozart\Assert\Assert;
  * @ORM\Entity
  * @ORM\Table(name="users")
  */
-class User extends Authenticatable implements MustVerifyEmail
+final class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
 
@@ -69,21 +70,21 @@ class User extends Authenticatable implements MustVerifyEmail
         return $user;
     }
 
-    public function updateUser(array $post): void
+    public static function updateUser(User $user, array $post): void
     {
         $validator = Validator::make($post, [
             'middleName' => 'required|string',
             'phone' => 'required|string',
-            'roleIds' => 'required|array',
+            'roleId' => 'required|string',
         ]);
 
         $validatedData = $validator->validate();
 
-        $this->middleName = ucwords($validatedData['middleName']);
-        $this->phone = $validatedData['phone'];
-        $this->roleIds = $validatedData['roleIds'];
+        $user->middleName = ucwords($validatedData['middleName']);
+        $user->phone = $validatedData['phone'];
+        $user->roleId = $validatedData['roleId'];
 
-        $this->save();
+        $user->save();
     }
 
     public function addRoles(array $roleIds): void
@@ -91,7 +92,7 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->roleIds = $roleIds;
     }
 
-    public function changePassword(array $post)
+    public function changePassword(User $user, array $post)
     {
         $validator = Validator::make($post, [
             'password' => 'required|string',
@@ -99,7 +100,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
         $validatedData = $validator->validate();
         $hashedPassword = Hash("sha256", $validatedData['password']);
-        $this->password = $hashedPassword;
+        $user->password = $hashedPassword;
     }
 
     public function password(): string
@@ -107,7 +108,27 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->password;
     }
 
-    // public function createOTP(): void
+    public function login(User $user, array $post)
+    {
+        $validator = Validator::make($post, [
+            'password' => 'required|string',
+            'email' => 'required|string'
+        ]);
+
+        $validatedData = $validator->validate();
+        if($validatedData['email'] === $user->email()){
+            $hashedPassword = Hash("sha256", $validatedData['password']);
+            if($hashedPassword === $user->password()){
+                $jwt = 
+            }
+        }
+    }
+
+    public function password(): string
+    {
+        return $this->password;
+    }
+     // public function createOTP(): void
     // {
     //     $this->otp = OTP::create();
     // }
@@ -120,9 +141,12 @@ class User extends Authenticatable implements MustVerifyEmail
     //     return null;
     // }
 
-    public function roleId(): array
+    public function roleId(): ?RoleId
     {
-        return $this->roleId ?? [];
+        if ($this->roleId) {
+            return RoleId::fromString($this->roleId);
+        }
+        return null;
     }
 
     public function role(): ?Role
@@ -138,6 +162,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasPermission(string $permissionName): bool
     {
         return $this->role && $this->role->hasPermission($permissionName);
+    }
+
+    public function email(): string
+    {
+        return $this->email;
     }
 
     public function data(): array

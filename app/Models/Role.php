@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+
 class Role extends Model
 {
     use HasFactory;
-    
+
     protected $keyType = 'string';
     public $incrementing = false;
 
@@ -47,5 +48,10 @@ class Role extends Model
     public function givePermissionTo($permission)
     {
         return $this->permission = $permission;
+    }
+
+    public function roleName(): string
+    {
+        return $this->roleName;
     }
 }

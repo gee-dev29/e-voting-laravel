@@ -6,12 +6,15 @@ use App\Http\Id\UserId;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\ResponseInterface\ApiResponse;
 use App\Http\ResponseInterface\StatusCode;
+use App\Http\Trait\RoleTrait;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class UserController
 {
+    use RoleTrait;
+
     public function createUser(CreateUserRequest $request)
     {
         try {
@@ -28,7 +31,9 @@ class UserController
     {
         /** @var User $user */
         $user = $request->attributes->get('user');
-        return new JsonResponse($user->data());
+        return new JsonResponse(array_merge($user->data(), [
+            "roleName" => $this->getRoleName($user->roleId())
+        ]));
     }
 
     public function getUsers(Request $request): JsonResponse
@@ -44,7 +49,9 @@ class UserController
         $queryBuilder = User::query($criteria);
         $users = $queryBuilder->skip($skip)->take($limit)->get();
         foreach ($users as $user) {
-            $data[] = $user->data();
+            $data[] = array_merge($user->data(), [
+                "roleName" => $this->getRoleName($user?->roleId())
+            ]);
         }
         return new JsonResponse(
             [
@@ -60,7 +67,7 @@ class UserController
             $post = $request->all();
             /** @var User */
             $user = $request->attributes->get('user');
-            $user->updateUser($post);
+            $user->updateUser($user, $post);
             return ApiResponse::success('User updated successfully', StatusCode::OK);
         } catch (\Throwable $th) {
             return ApiResponse::error('Error updating user', $th->getMessage(), StatusCode::BAD_REQUEST);
@@ -81,14 +88,22 @@ class UserController
     public function changeUserPassword(CreateUserRequest $request): JsonResponse
     {
         try {
-            //get the verified user from the check user middleware
             /** @var User */
-            $user = $request->user;
+            $user = $request->attributes->get('user');
             $post = $request->all();
-            $user->changePassword($post);
+            $user->changePassword($user, $post);
             return ApiResponse::success('User updated successfully', StatusCode::OK);
         } catch (\Throwable $e) {
             return ApiResponse::error('Error updating user', $e->getMessage(), StatusCode::BAD_REQUEST);
+        }
+    }
+
+    public function loginUser(CreateUserRequest $request): JsonResponse
+    {
+        try {
+            //code...
+        } catch (\Throwable $th) {
+            //throw $th;
         }
     }
 }

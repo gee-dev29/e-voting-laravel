@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Exception;
 
-use App\Http\Exception\CommonProblemDetailsExceptionTrait as ExceptionCommonProblemDetailsExceptionTrait;
-use App\Http\Exception\ProblemDetailsExceptionInterface;
+use App\Http\Exception\CommonProblemDetailsExceptionTrait;
 use App\Http\Trait\ExceptionTrait;
 use DomainException;
-use Mezzio\ProblemDetails\Exception\CommonProblemDetailsExceptionTrait;
-use Throwable;
 
-class UserException extends DomainException implements ProblemDetailsExceptionInterface
+class UserException extends DomainException
 {
-    use ExceptionCommonProblemDetailsExceptionTrait, ExceptionTrait;
+    use CommonProblemDetailsExceptionTrait, ExceptionTrait;
 
     public static function notFound(): self
     {
@@ -22,7 +19,6 @@ class UserException extends DomainException implements ProblemDetailsExceptionIn
         );
         $e = new self($detail);
         $e->status = 404;
-        $e->type   = self::TYPE;
         $e->title  = 'User Not Found';
         $e->detail = $detail;
 
@@ -35,11 +31,9 @@ class UserException extends DomainException implements ProblemDetailsExceptionIn
         );
         $e = new self($detail);
         $e->status = 404;
-        $e->type   = self::TYPE;
         $e->title  = 'User ID Not Found';
         $e->detail = $detail;
 
         return $e;
     }
 }
-

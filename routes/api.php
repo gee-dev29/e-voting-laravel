@@ -38,8 +38,8 @@ Route::middleware([
 ])->group(function () {
   Route::delete('/user/{userId}/delete', [UserController::class, 'deleteUser']);
   Route::get('/user/{userId}', [UserController::class, 'getUser']);
-  Route::patch('/user/{id}/update', [UserController::class, 'updateUserDetails']);
-  Route::patch('/user/{id}/change-user-password', [UserController::class, 'changeUserPassword']);
+  Route::patch('/user/{userId}/change-user-password', [UserController::class, 'changeUserPassword']);
+  Route::patch('/user/{userId}/update', [UserController::class, 'updateUserDetails']);
 });
 
 Route::middleware([
@@ -48,7 +48,7 @@ Route::middleware([
   Route::patch('/role/{roleId}/permissions', [RolePermissionController::class, 'addRolePermisssions']);
 });
 
-Route::get('/users', [
+Route::get('/user', [
   UserController::class,
   'getUsers'
 ]);
@@ -82,4 +82,3 @@ Route::get('/permission', [
   PermissionController::class,
   'viewPermission'
 ]);
-

@@ -52,13 +52,13 @@ class CreateUserRequest extends FormRequest
                     ->symbols()
             ],
             'phone' => [
-                'required',
+                'nullable',
                 'min:8',
                 'max:25',
                 'string'
             ],
             'otp' => [
-                'required',
+                'nullable',
                 'integer'
             ],
             'roleId' => ['array' | 'uuid']
