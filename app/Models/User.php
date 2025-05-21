@@ -2,17 +2,14 @@
 
 namespace App\Models;
 
+use App\Casts\OtpCast;
 use App\Http\Id\RoleId;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Throwable;
-use Webmozart\Assert\Assert;
 
 /**
  * @ORM\Entity
@@ -47,6 +44,11 @@ final class User extends Authenticatable implements MustVerifyEmail
         // 'lastName',
         // 'email',
         'password',
+        'otp'
+    ];
+
+    protected $casts = [
+        'otp' => OtpCast::class,
     ];
 
     public static function createUser(array $data)
@@ -103,32 +105,27 @@ final class User extends Authenticatable implements MustVerifyEmail
         $user->password = $hashedPassword;
     }
 
-    public function password(): string
-    {
-        return $this->password;
-    }
-
     public function login(User $user, array $post)
     {
-        $validator = Validator::make($post, [
-            'password' => 'required|string',
-            'email' => 'required|string'
-        ]);
+        // $validator = Validator::make($post, [
+        //     'password' => 'required|string',
+        //     'email' => 'required|string'
+        // ]);
 
-        $validatedData = $validator->validate();
-        if($validatedData['email'] === $user->email()){
-            $hashedPassword = Hash("sha256", $validatedData['password']);
-            if($hashedPassword === $user->password()){
-                $jwt = 
-            }
-        }
+        // $validatedData = $validator->validate();
+        // if($validatedData['email'] === $user->email()){
+        //     $hashedPassword = Hash("sha256", $validatedData['password']);
+        //     if($hashedPassword === $user->password()){
+        //         $jwt = 
+        //     }
+        // }
     }
 
     public function password(): string
     {
         return $this->password;
     }
-     // public function createOTP(): void
+    // public function createOTP(): void
     // {
     //     $this->otp = OTP::create();
     // }
