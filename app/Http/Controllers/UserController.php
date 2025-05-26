@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Id\UserId;
+use App\Http\OTPValidation;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\ResponseInterface\ApiResponse;
 use App\Http\ResponseInterface\StatusCode;
@@ -10,10 +11,23 @@ use App\Http\Trait\RoleTrait;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use App\Http\Exception\UserException;
+use Firebase\JWT\JWT;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
-class UserController
+class UserController extends Controller
 {
     use RoleTrait;
+
+    protected OTPValidation $otpValidator;
+
+    public function __construct(OTPValidation $otpValidator)
+    {
+        $this->otpValidator = $otpValidator;
+    }
 
     public function createUser(CreateUserRequest $request)
     {
@@ -98,12 +112,95 @@ class UserController
         }
     }
 
-    public function loginUser(CreateUserRequest $request): JsonResponse
+    public function login(Request $request)
     {
-        try {
-            //code...
-        } catch (\Throwable $th) {
-            //throw $th;
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|string',
+            'email' => 'required|string|email'
+        ]);
+
+        $validatedData = $validator->validate();
+
+        $user = User::where('email', $validatedData['email'])->first();
+
+        $validatedData = $validator->validate();
+        if ($validatedData['email'] !== $user->email() &&  !Hash::check($validatedData['password'], $user->password())) {
+            throw UserException::InvalidLoginCredential($user);
         }
+        $payload = [
+            'iss' => "your-app",
+            'sub' => $user->id,
+            'email' => $user->email,
+            'iat' => time(),
+            'exp' => time() + 3600
+        ];
+        $token = JWT::encode($payload, env('JWT_SECRET'), 'HS256');
+        return response()->json([
+            'message' => 'Login successful',
+            'token'   => $token,
+            'user'    => $user
+        ]);
+    }
+
+    //  public function login(Request $request)
+    // {
+    //     $request->validate([
+    //         'email'    => 'required|email',
+    //         'password' => 'required|string'
+    //     ]);
+
+    //     if (!Auth::attempt($request->only('email', 'password'))) {
+    //         return response()->json(['message' => 'Login successful',
+    //         'token'   => $token,
+    //         'user'    => $user], 401);
+    //     }
+
+    //     $user = Auth::user();
+
+    //     if (!$user->email_verified_at) {
+    //         return response()->json(['error' => 'Please verify your OTP before logging in'], 403);
+    //     }
+
+    //     $token = $user->createToken('auth_token')->plainTextToken;
+
+    //     return response()->json([
+    //         'message' => 'Login successful',
+    //         'token'   => $token,
+    //         'user'    => $user
+    //     ]);
+    // }
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate(['otp' => 'required|string']);
+        /** @var User */
+        $user = auth()->guard()->user();
+
+        try {
+            $this->otpValidator->validateOtp($user, $request->input('otp'));
+            $user->otp = null; // Clear OTP after success
+            $user->save();
+
+            return response()->json(['message' => 'OTP verified successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function sendOtp(Request $request)
+    {
+        /** @var User */
+        $user = Auth::user(); // or fetch the user manually
+
+        $user->otp = (object) [
+            'value' => rand(100000, 999999),
+            'createdOn' => now()->toISOString(),
+            'expiresOn' => now()->addMinutes(10)->toISOString(),
+        ];
+        $user->save();
+
+        // Send OTP to user via email or SMS here...
+
+        return response()->json(['message' => 'OTP sent successfully.']);
     }
 }
