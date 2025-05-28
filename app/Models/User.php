@@ -3,13 +3,17 @@
 namespace App\Models;
 
 use App\Casts\OtpCast;
+use App\Http\Exception\UserException;
 use App\Http\Id\RoleId;
 use Doctrine\ORM\Mapping as ORM;
+use Firebase\JWT\JWT;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
  * @ORM\Entity
@@ -103,22 +107,6 @@ final class User extends Authenticatable implements MustVerifyEmail
         $validatedData = $validator->validate();
         $hashedPassword = Hash("sha256", $validatedData['password']);
         $user->password = $hashedPassword;
-    }
-
-    public function login(User $user, array $post)
-    {
-        // $validator = Validator::make($post, [
-        //     'password' => 'required|string',
-        //     'email' => 'required|string'
-        // ]);
-
-        // $validatedData = $validator->validate();
-        // if($validatedData['email'] === $user->email()){
-        //     $hashedPassword = Hash("sha256", $validatedData['password']);
-        //     if($hashedPassword === $user->password()){
-        //         $jwt = 
-        //     }
-        // }
     }
 
     public function password(): string
