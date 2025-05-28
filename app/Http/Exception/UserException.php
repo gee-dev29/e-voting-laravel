@@ -6,6 +6,7 @@ namespace App\Http\Exception;
 
 use App\Http\Exception\CommonProblemDetailsExceptionTrait;
 use App\Http\Trait\ExceptionTrait;
+use App\Models\User;
 use DomainException;
 
 class UserException extends DomainException
@@ -32,6 +33,20 @@ class UserException extends DomainException
         $e = new self($detail);
         $e->status = 404;
         $e->title  = 'User ID Not Found';
+        $e->detail = $detail;
+
+        return $e;
+    }
+
+    public static function InvalidLoginCredential(User $user): self
+    {
+        $detail = sprintf(
+            'Invalid login credential for user with email: %s',
+            $user->email()
+        );
+        $e = new self($detail);
+        $e->status = 401; 
+        $e->title  = 'Authentication Failed';
         $e->detail = $detail;
 
         return $e;
