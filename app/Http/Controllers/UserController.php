@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Id\UserId;
-use App\Http\OTPValidation;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\ResponseInterface\ApiResponse;
 use App\Http\ResponseInterface\StatusCode;
@@ -14,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Exception\UserException;
+use App\Service\OTPValidation;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
