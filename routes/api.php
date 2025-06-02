@@ -1,4 +1,3 @@
-Route
 <?php
 
 use App\Http\Controllers\CandidateController;
