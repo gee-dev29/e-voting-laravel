@@ -52,13 +52,13 @@ class UserController extends Controller
 
     public function getUsers(Request $request): JsonResponse
     {
-        $query = $request->getQueryString();
+        $query = $request->query();
         $criteria = $data = [];
         $limit = isset($query['limit']) ? intval($query['limit']) : 20;
         $skip = isset($query['skip']) ? intval($query['skip']) : 0;
 
         if (isset($query['lastName'])) {
-            $criteria = array_merge($criteria, ['lastName' => $query['lastName']]);
+            $criteria =  $query['lastName'];
         }
         $queryBuilder = User::query($criteria);
         $users = $queryBuilder->skip($skip)->take($limit)->get();
