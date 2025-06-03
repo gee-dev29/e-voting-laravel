@@ -13,6 +13,7 @@
         "laravel/tinker": "^2.9",
         "php-http/discovery": "^1.20",
         "psr/http-factory-implementation": "*",
+        "spatie/laravel-query-builder": "^6.3",
         "symfony/psr-http-message-bridge": "^7.2",
         "tymon/jwt-auth": "^2.2"
     },

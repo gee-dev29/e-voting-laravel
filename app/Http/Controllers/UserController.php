@@ -17,6 +17,7 @@ use App\Service\OTPValidation;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
 {
@@ -53,15 +54,20 @@ class UserController extends Controller
     public function getUsers(Request $request): JsonResponse
     {
         $query = $request->query();
-        $criteria = $data = [];
+        $data = [];
         $limit = isset($query['limit']) ? intval($query['limit']) : 20;
         $skip = isset($query['skip']) ? intval($query['skip']) : 0;
+        $allowed = ['lastName', 'firstName', 'email'];
+        $requested = array_keys($query);
+        $filters = array_intersect($allowed, $requested);
 
-        if (isset($query['lastName'])) {
-            $criteria =  $query['lastName'];
+        /**@var User */
+        $users = User::query();
+        foreach ($filters as $filter) {
+            $users->where($filter, $query[$filter]);
         }
-        $queryBuilder = User::query($criteria);
-        $users = $queryBuilder->skip($skip)->take($limit)->get();
+
+        $users = $users->skip($skip)->take($limit)->get();
         foreach ($users as $user) {
             $data[] = array_merge($user->data(), [
                 "roleName" => $this->getRoleName($user?->roleId())
