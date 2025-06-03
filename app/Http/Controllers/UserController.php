@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Id\UserId;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\ResponseInterface\ApiResponse;
 use App\Http\ResponseInterface\StatusCode;
@@ -17,7 +16,6 @@ use App\Service\OTPValidation;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Spatie\QueryBuilder\QueryBuilder;
 
 class UserController extends Controller
 {
