@@ -3,17 +3,13 @@
 namespace App\Models;
 
 use App\Casts\OtpCast;
-use App\Http\Exception\UserException;
 use App\Http\Id\RoleId;
 use Doctrine\ORM\Mapping as ORM;
-use Firebase\JWT\JWT;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
  * @ORM\Entity
@@ -35,18 +31,8 @@ final class User extends Authenticatable implements MustVerifyEmail
             }
         });
     }
-    // protected $fillable = [
-    //     'firstName',
-    //     'lastName',
-    //     'middleName',
-    //     'email',
-    //     'password',
-    // ];
     protected $guarded = [
         'id',
-        // 'firstName',
-        // 'lastName',
-        // 'email',
         'password',
         'otp'
     ];
