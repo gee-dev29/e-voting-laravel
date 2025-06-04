@@ -129,6 +129,8 @@ class UserController extends Controller
         if ($validatedData['email'] !== $user->email() &&  !Hash::check($validatedData['password'], $user->password())) {
             throw UserException::InvalidLoginCredential($user);
         }
+        $this->sendOtp();
+        $this->verifyOtp($request);
         $payload = [
             'iss' => "your-app",
             'sub' => $user->id,
@@ -172,7 +174,7 @@ class UserController extends Controller
     //     ]);
     // }
 
-    public function verifyOtp(Request $request)
+    private function verifyOtp(Request $request)
     {
         $request->validate(['otp' => 'required|string']);
         /** @var User */
@@ -189,10 +191,10 @@ class UserController extends Controller
         }
     }
 
-    public function sendOtp(Request $request)
+    private function sendOtp()
     {
         /** @var User */
-        $user = Auth::user(); // or fetch the user manually
+        $user = Auth::user();
 
         $user->otp = (object) [
             'value' => rand(100000, 999999),
@@ -200,9 +202,6 @@ class UserController extends Controller
             'expiresOn' => now()->addMinutes(10)->toISOString(),
         ];
         $user->save();
-
-        // Send OTP to user via email or SMS here...
-
         return response()->json(['message' => 'OTP sent successfully.']);
     }
 }
