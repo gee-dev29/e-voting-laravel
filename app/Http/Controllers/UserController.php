@@ -176,8 +176,7 @@ class UserController extends Controller
     private function verifyOtp(Request $request)
     {
         $request->validate(['otp' => 'required|string']);
-        /** @var User */
-        $user = auth()->guard()->user();
+        $user = $request->attributes->get('user');
 
         try {
             $this->otpValidator->validateOtp($user, $request->input('otp'));
