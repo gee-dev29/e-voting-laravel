@@ -119,12 +119,10 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'password' => 'required|string',
             'email' => 'required|string|email'
         ]);
 
         $validatedData = $validator->validate();
-
         $user = User::where('email', $validatedData['email'])->first();
 
         $validatedData = $validator->validate();
