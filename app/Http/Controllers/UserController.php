@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Exception\UserException;
 use App\Service\OTPValidation;
+use Closure;
 use Firebase\JWT\JWT;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -129,8 +130,6 @@ class UserController extends Controller
         if ($validatedData['email'] !== $user->email() &&  !Hash::check($validatedData['password'], $user->password())) {
             throw UserException::InvalidLoginCredential($user);
         }
-        $this->sendOtp();
-        $this->verifyOtp($request);
         $payload = [
             'iss' => "your-app",
             'sub' => $user->id,
@@ -182,7 +181,7 @@ class UserController extends Controller
 
         try {
             $this->otpValidator->validateOtp($user, $request->input('otp'));
-            $user->otp = null; // Clear OTP after success
+            $user->otp = null;
             $user->save();
 
             return response()->json(['message' => 'OTP verified successfully']);
@@ -191,11 +190,9 @@ class UserController extends Controller
         }
     }
 
-    private function sendOtp()
+    private function sendOtp(Request $request)
     {
-        /** @var User */
-        $user = Auth::user();
-
+        $user = $request->attributes->get('user');
         $user->otp = (object) [
             'value' => rand(100000, 999999),
             'createdOn' => now()->toISOString(),
@@ -203,5 +200,23 @@ class UserController extends Controller
         ];
         $user->save();
         return response()->json(['message' => 'OTP sent successfully.']);
+    }
+
+    private function findUserByEmail(Request $request, Closure $next)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email'
+        ]);
+
+        $validatedData = $validator->validate();
+        $user = User::where('email', $validatedData['email'])->first();
+
+        $validatedData = $validator->validate();
+        if ($validatedData['email'] !== $user->email()) {
+            throw UserException::InvalidLoginCredential($user);
+        }
+
+        $request->attributes->set('user', $user);
+        return $next($request);
     }
 }
