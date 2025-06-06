@@ -147,7 +147,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'email' => $this->email,
-            'phone' => $this->phone ?? null,
+            'phone' => $this->phone,
             'roleId' => $this->roleId ?? [],
             'middleName' => $this->middleName ?? null,
         ];

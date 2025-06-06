@@ -61,7 +61,8 @@ class CreateUserRequest extends FormRequest
                 'nullable',
                 'integer'
             ],
-            'roleId' => ['array', 'uuid']
+            'roleId' => ['required', 'array'],
+            'roleId.*' => ['uuid'],
         ];
     }
 

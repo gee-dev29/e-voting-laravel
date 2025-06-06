@@ -19,7 +19,7 @@ class OTPValidation
       throw new \Exception("OTP has expired.");
     }
 
-    if ($user->otp->value !== $inputOtp) {
+    if ((string)$user->otp->value !== (string)$inputOtp) {
       throw new \Exception("Invalid OTP.");
     }
 
