@@ -3,10 +3,12 @@
 namespace App\Http\Middleware;
 
 use App\Http\Exception\JwtException;
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class JwtAuthentication
 {
@@ -19,14 +21,23 @@ class JwtAuthentication
     {
         $token = $request->bearerToken();
         if (!$token) {
-            throw JwtException::noTokenFound();
+            return response()->json([
+                "error" => "Token not found"
+            ], 401);
         }
-        $decoded = JWT::decode($token, env('JWT_SECRET'));
+        try {
+            $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
+        } catch (\Firebase\JWT\ExpiredException $e) {
+            return response()->json([
+                "error" => $e->getMessage()
+            ], 401);
+        }
         if (!$token) {
             throw JwtException::inValidToken();
         }
-        var_dump($decoded);
-        // $userId  = $decoded->id
+        $userModel = User::where(['email' => $decoded->email])->first();
+        $user = $userModel->only(['id', 'firstName', 'lastName', 'email']);
+        $request->merge(['userId' => $user['id']]);
         return $next($request);
     }
 }

@@ -31,6 +31,7 @@ class checkRole
         if (!$role) {
             throw new Exception(`role of this %roleId is not found`);
         }
+        $request->attributes->set('role', $role);
         return $next($request);
     }
 }

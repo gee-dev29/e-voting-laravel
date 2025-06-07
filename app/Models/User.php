@@ -68,14 +68,11 @@ final class User extends Authenticatable implements MustVerifyEmail
         $validator = Validator::make($post, [
             'middleName' => 'required|string',
             'phone' => 'required|string',
-            'roleId' => 'required|string',
         ]);
 
         $validatedData = $validator->validate();
-
         $user->middleName = ucwords($validatedData['middleName']);
         $user->phone = $validatedData['phone'];
-        $user->roleId = $validatedData['roleId'];
 
         $user->save();
     }

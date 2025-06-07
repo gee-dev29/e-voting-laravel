@@ -14,7 +14,15 @@ class JwtException extends DomainException
 
   public static function noTokenFound(): self
   {
-    return new self('Token not found.');
+    $detail = sprintf(
+      'Token not found'
+    );
+    $e = new self($detail);
+    $e->status = 404;
+    $e->title  = 'Token not found';
+    $e->detail = $detail;
+
+    return $e;
   }
   public static function inValidToken(): self
   {
