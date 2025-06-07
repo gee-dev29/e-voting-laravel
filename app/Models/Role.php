@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class Role extends Model
@@ -26,6 +27,18 @@ class Role extends Model
     protected $fillable = ['roleName'];
 
     protected $table = 'role';
+
+    public static function createRole(array $data)
+    {
+        $validator = Validator::make($data, [
+            'roleName' => 'required|string'
+        ]);
+        $validatedData = $validator->validate();
+
+        $role = new self();
+        $role->roleName = ucwords($validatedData['roleName']);
+        return $role;
+    }
 
     public function users()
     {
@@ -53,5 +66,13 @@ class Role extends Model
     public function roleName(): string
     {
         return $this->roleName;
+    }
+
+    public function data(): array
+    {
+        return [
+            'id' => $this->id,
+            'roleName' => $this->roleName
+        ];
     }
 }

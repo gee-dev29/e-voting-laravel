@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\OtpCast;
 use App\Http\Id\RoleId;
+use App\Http\Id\UserId;
 use Doctrine\ORM\Mapping as ORM;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -138,6 +139,11 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function email(): string
     {
         return $this->email;
+    }
+
+    public function id(): UserId
+    {
+        return UserId::fromString($this->id);
     }
 
     public function data(): array
