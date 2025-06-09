@@ -7,10 +7,10 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class getUsers extends Controller
+class GetUsers extends Controller
 {
     use RoleTrait;
-    public function getUsers(Request $request): JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
         $query = $request->query();
         $data = [];
@@ -25,11 +25,15 @@ class getUsers extends Controller
         foreach ($filters as $filter) {
             $users->where($filter, $query[$filter]);
         }
-
+        $roleNames = [];
         $users = $users->skip($skip)->take($limit)->get();
         foreach ($users as $user) {
+            $roleIds = $user?->roleId();
+            foreach ($roleIds as $roleId) {
+                $roleNames[] = $this->getRoleName($roleId);
+            }
             $data[] = array_merge($user->data(), [
-                "roleName" => $this->getRoleName($user?->roleId())
+                "roleName" => implode(', ', $roleNames)
             ]);
         }
         return new JsonResponse(

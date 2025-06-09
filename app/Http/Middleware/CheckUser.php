@@ -18,15 +18,17 @@ class CheckUser
    */
   public function handle(Request $request, Closure $next): Response
   {
-    $userId = $request->route('userId');
-    if (!$userId) {
+    $userIdStr = $request->route('userId');
+    if (!$userIdStr) {
       $post = $request->post();
-      $userId = $post['userId'] ?? null;
+      $userIdStr = $post['userId'] ?? null;
       if (!$post) {
         throw UserException::UserIdRequired();
+        // retrieve userId from the login user
+        $userIdStr = $request->userId;
       }
     }
-    $userId = UserId::fromString($userId);
+    $userId = UserId::fromString($userIdStr);
     $user = User::find($userId->toString());
     if (!$user) {
       throw UserException::notFound();

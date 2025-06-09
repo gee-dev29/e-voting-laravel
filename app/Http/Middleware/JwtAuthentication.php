@@ -21,16 +21,12 @@ class JwtAuthentication
     {
         $token = $request->bearerToken();
         if (!$token) {
-            return response()->json([
-                "error" => "Token not found"
-            ], 401);
+            return response()->json(["error" => "Token not found"], 401);
         }
         try {
             $decoded = JWT::decode($token, new Key(env('JWT_SECRET'), 'HS256'));
         } catch (\Firebase\JWT\ExpiredException $e) {
-            return response()->json([
-                "error" => $e->getMessage()
-            ], 401);
+            return response()->json(["error" => $e->getMessage()], 401);
         }
         if (!$token) {
             throw JwtException::inValidToken();

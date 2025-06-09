@@ -9,7 +9,7 @@ use App\Models\Role;
 
 trait RoleTrait
 {
-  private function getRoleName(?RoleId $roleId): ?string
+  private function getRoleName(string $roleId): ?string
   {
     /** @var Role */
     $role = Role::find($roleId);

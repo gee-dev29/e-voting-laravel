@@ -6,6 +6,7 @@ use App\Casts\OtpCast;
 use App\Http\Id\RoleId;
 use App\Http\Id\UserId;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -40,6 +41,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
     protected $casts = [
         'otp' => OtpCast::class,
+        'roleId' => 'array'
     ];
 
     public static function createUser(array $data)
@@ -79,7 +81,7 @@ final class User extends Authenticatable implements MustVerifyEmail
 
     public function addRoles(array $roleIds): void
     {
-        $this->roleIds = $roleIds;
+        $this->roleId = $roleIds;
     }
 
     public function changePassword(User $user, array $post)
@@ -97,25 +99,47 @@ final class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->password;
     }
-    // public function createOTP(): void
-    // {
-    //     $this->otp = OTP::create();
-    // }
 
-    // public function otp(): ?OTP
-    // {
-    //     if (isset($this->otp)) {
-    //         return $this->otp;
-    //     }
-    //     return null;
-    // }
-
-    public function roleId(): ?RoleId
+    public function roleId(): array
     {
-        if ($this->roleId) {
-            return RoleId::fromString($this->roleId);
+        $rawRoleIds = $this->attributes['roleId'];
+        $parsedRoleIds = [];
+        if (is_string($rawRoleIds) && ($decoded = json_decode($rawRoleIds, true)) !== null && is_array($decoded)) {
+            $parsedRoleIds = $decoded;
+        } elseif (is_string($rawRoleIds)) {
+            $parsedRoleIds = (array)$rawRoleIds;
+        } elseif (is_array($rawRoleIds)) {
+            $parsedRoleIds = $rawRoleIds;
+        } elseif (is_null($rawRoleIds)) {
+            $parsedRoleIds = (array)$rawRoleIds;
         }
-        return null;
+        $roleIdObjects = [];
+        foreach ($parsedRoleIds as $idString) {
+            try {
+                $roleIdObjects[] = RoleId::fromString((string) $idString);
+            } catch (\Throwable $th) {
+                throw new Exception($th);
+            }
+        }
+        return $roleIdObjects;
+    }
+
+    public function getRoleIds(): array
+    {
+        isset($this->roleId) ? $this->roleId : [];
+        $rawRoleIds = is_array($this->roleId) ? $this->roleId : [];
+        $roleIds = [];
+        foreach ($rawRoleIds as $rawRoleId) {
+            try {
+                $roleIds[] = RoleId::fromString($rawRoleId);
+            } catch (\Throwable $th) {
+                throw new Exception($th);
+            }
+        }
+        if ($roleIds > 0) {
+            return $roleIds;
+        }
+        return [];
     }
 
     public function role(): ?Role
@@ -123,15 +147,15 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->role;
     }
 
-    public function hasRole(string $roleName): bool
-    {
-        return $this->role && $this->role->getRoleName() === $roleName;
-    }
+    // public function hasRole(string $roleName): bool
+    // {
+    //     return $this->role && $this->role->getRoleName() === $roleName;
+    // }
 
-    public function hasPermission(string $permissionName): bool
-    {
-        return $this->role && $this->role->hasPermission($permissionName);
-    }
+    // public function hasPermission(string $permissionName): bool
+    // {
+    //     return $this->role && $this->role->hasPermission($permissionName);
+    // }
 
     public function email(): string
     {
@@ -150,7 +174,7 @@ final class User extends Authenticatable implements MustVerifyEmail
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'email' => $this->email,
-            'phone' => $this->phone,
+            'phone' => $this->phone ?? null,
             'roleId' => $this->roleId ?? [],
             'middleName' => $this->middleName ?? null,
         ];

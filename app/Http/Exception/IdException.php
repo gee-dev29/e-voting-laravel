@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Exception;
+namespace App\Http\Exception;
 
-use App\Http\Exception\CommonProblemDetailsExceptionTrait;
-use App\Http\Exception\ProblemDetailsExceptionInterface;
+use App\Http\trait\CommonProblemDetailsExceptionTrait;
+use App\Http\Interface\ProblemDetailsExceptionInterface;
 use DomainException;
 
 class IdException extends DomainException implements ProblemDetailsExceptionInterface

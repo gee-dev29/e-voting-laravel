@@ -6,10 +6,10 @@ use App\Http\Trait\RoleTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class getUser extends Controller
+class GetUser extends Controller
 {
     use RoleTrait;
-    public function getUser(Request $request): JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
         /** @var User $user */
         $user = $request->attributes->get('user');

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Exception;
+namespace App\Http\Interface;
 
 interface ProblemDetailsExceptionInterface
 {
