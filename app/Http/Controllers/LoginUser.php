@@ -11,11 +11,11 @@ class LoginUser extends Controller
     {
         $user = $request->attributes->get('user');
         $payload = [
-            'iss' => "your-app",
+            'iss' => "e-voting-system",
             'sub' => $user->id,
             'email' => $user->email,
             'iat' => time(),
-            'exp' => time() + 3600
+            'exp' => time() + 86400
         ];
         $token = JWT::encode($payload, env('JWT_SECRET'), 'HS256');
         return response()->json([
