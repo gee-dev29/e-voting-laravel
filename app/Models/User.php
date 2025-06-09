@@ -124,24 +124,6 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $roleIdObjects;
     }
 
-    public function getRoleIds(): array
-    {
-        isset($this->roleId) ? $this->roleId : [];
-        $rawRoleIds = is_array($this->roleId) ? $this->roleId : [];
-        $roleIds = [];
-        foreach ($rawRoleIds as $rawRoleId) {
-            try {
-                $roleIds[] = RoleId::fromString($rawRoleId);
-            } catch (\Throwable $th) {
-                throw new Exception($th);
-            }
-        }
-        if ($roleIds > 0) {
-            return $roleIds;
-        }
-        return [];
-    }
-
     public function role(): ?Role
     {
         return $this->role;

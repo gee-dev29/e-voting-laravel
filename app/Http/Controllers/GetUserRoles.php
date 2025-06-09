@@ -14,7 +14,7 @@ class GetUserRoles extends Controller
         $data = [];
         /**@var User */
         $user = $request->attributes->get('user');
-        $roleIds = $user->getRoleIds();
+        $roleIds = $user?->roleId();
         foreach ($roleIds as $roleId) {
             /**@var Role */
             $role = Role::where(['id' => $roleId])->first();
