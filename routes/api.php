@@ -1,10 +1,27 @@
 <?php
 
+use App\Http\Controllers\AssignUserRole;
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\ChangeUserPassword;
+use App\Http\Controllers\CreateRole;
+use App\Http\Controllers\createUser;
+use App\Http\Controllers\DeleteRole;
+use App\Http\Controllers\DeleteUser;
+use App\Http\Controllers\FindUserByEmail;
+use App\Http\Controllers\GenerateOTP;
+use App\Http\Controllers\GetRole;
+use App\Http\Controllers\GetRoles;
+use App\Http\Controllers\GetUser;
+use App\Http\Controllers\GetUserRoles;
+use App\Http\Controllers\GetUsers;
+use App\Http\Controllers\LoginUser;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\rolePermissionController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\UpdateUserDetails;
+use App\Http\Controllers\VerifyOTP;
+use App\Http\Middleware\CheckUser;
+use App\Http\Middleware\JwtAuthentication;
 use Illuminate\Support\Facades\Route;
 
 // candidate route
@@ -27,19 +44,16 @@ Route::get('/view-candidates', [
 ]);
 
 // user route
-Route::post('/user', [
-  UserController::class,
-  'createUser'
-]);
-
-Route::middleware([
-  'check.user',
-])->group(function () {
-  Route::delete('/user/{userId}/delete', [UserController::class, 'deleteUser']);
-  Route::get('/user/{userId}', [UserController::class, 'getUser']);
-  Route::patch('/user/{userId}/change-user-password', [UserController::class, 'changeUserPassword']);
-  Route::patch('/user/{userId}/update', [UserController::class, 'updateUserDetails']);
-});
+Route::post('/user', CreateUser::class);
+Route::get('/user', GetUsers::class)->middleware(JwtAuthentication::class);
+Route::patch('/user/otp', GenerateOTP::class)->middleware(FindUserByEmail::class);
+Route::post('/user/validate-otp', LoginUser::class)->middleware([FindUserByEmail::class, VerifyOTP::class]);
+Route::delete('/user/{userId}/delete', DeleteUser::class)->middleware([JwtAuthentication::class, CheckUser::class]);
+Route::get('/user/{userId}', GetUser::class)->middleware([JwtAuthentication::class, CheckUser::class]);
+Route::patch('/user/{userId}/change-user-password', ChangeUserPassword::class)->middleware([JwtAuthentication::class, CheckUser::class]);
+Route::patch('/user/{userId}/update', UpdateUserDetails::class)->middleware([JwtAuthentication::class, CheckUser::class]);
+Route::patch('/user/{userId}/assign-role', AssignUserRole::class)->middleware([JwtAuthentication::class, CheckUser::class]);
+Route::get('/user/{userId}/user-role', GetUserRoles::class)->middleware([JwtAuthentication::class, CheckUser::class]);
 
 Route::middleware([
   'check.user',
@@ -47,29 +61,18 @@ Route::middleware([
   Route::patch('/role/{roleId}/permissions', [RolePermissionController::class, 'addRolePermisssions']);
 });
 
-Route::get('/user', [
-  UserController::class,
-  'getUsers'
-]);
-
 // role route
 Route::middleware([
+  // 'JwtAuthentication',
   'check.role',
 ])->group(function () {
-  Route::delete('/role/{roleId}/delete', [RoleController::class, 'deleteRole']);
+  Route::delete('/role/{roleId}/delete', DeleteRole::class);
   Route::patch('/role/{roleId}/update', [RoleController::class, 'updateRole']);
-  Route::get('/role/{roleId}', [RoleController::class, 'getRole']);
+  Route::get('/role/{roleId}', GetRole::class);
 });
 
-Route::post('/role', [
-  RoleController::class,
-  'createRole'
-]);
-
-Route::get('/role', [
-  RoleController::class,
-  'getRoles'
-]);
+Route::post('/role', CreateRole::class)->middleware(JwtAuthentication::class);
+Route::get('/role', GetRoles::class)->middleware(JwtAuthentication::class);
 
 // permissions route
 Route::post('/permission', [
