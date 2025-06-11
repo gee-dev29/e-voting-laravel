@@ -31,8 +31,8 @@ class JwtAuthentication
         if (!$token) {
             throw JwtException::inValidToken();
         }
-        $userModel = User::where(['email' => $decoded->email])->first();
-        $user = $userModel->only(['id', 'firstName', 'lastName', 'email']);
+        $user = User::where(['email' => $decoded->email])->first()->getAttributes();
+        unset($user['password']);
         $request->merge(['userId' => $user['id']]);
         return $next($request);
     }

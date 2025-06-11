@@ -29,7 +29,7 @@ class CheckUser
       }
     }
     $userId = UserId::fromString($userIdStr);
-    $user = User::find($userId->toString());
+    $user = User::find($userId->toString())->getAttributes();
     if (!$user) {
       throw UserException::notFound();
     }
