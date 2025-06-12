@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Id\RoleId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
@@ -66,6 +67,11 @@ class Role extends Model
     public function roleName(): string
     {
         return $this->roleName;
+    }
+
+    public function id(): RoleId
+    {
+        return RoleId::fromString($this->id);
     }
 
     public function data(): array
