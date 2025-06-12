@@ -29,10 +29,12 @@ class CheckUser
       }
     }
     $userId = UserId::fromString($userIdStr);
-    $user = User::find($userId->toString())->getAttributes();
+    $user = User::find($userId->toString());
+    $userModel = $user->getAttributes();
     if (!$user) {
       throw UserException::notFound();
     }
+    unset($user['password']);
     $request->attributes->set('user', $user);
     return $next($request);
   }
