@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Http\Id\RolePermissionId;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
 
 class RolesPermissions extends Model
 {
@@ -16,8 +18,28 @@ class RolesPermissions extends Model
         'permissionIds'
     ];
 
-    public function addPermissionsToRole($permissionId)
+    public static function AddPermissionsToRole(array $data)
     {
-        return $this->permissionId = $permissionId;
+        Validator::make($data, [
+            'permissionId' => 'required|array',
+            'roleId' => 'required|string'
+        ]);
+
+        $rolePermission = new self();
+        return $rolePermission;
+    }
+
+    public function id(): RolePermissionId
+    {
+        return RolePermissionId::fromString($this->id);
+    }
+
+    public function data(): array
+    {
+        return [
+            'id' => $this->id,
+            'permissionId' => $this->permissionId,
+            'roleId' => $this->roleId
+        ];
     }
 }
