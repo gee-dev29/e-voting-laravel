@@ -2,13 +2,14 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Id\RoleId;
 use App\Models\Role;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class checkRole
+class CheckRole
 {
     /**
      * Handle an incoming request.
@@ -17,20 +18,21 @@ class checkRole
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $roleId = $request->attributes->get('roleId');
-        if (!$roleId) {
-            $post = $request->post(['roleId']);
+        $roleIdString = $request->route('roleId');
+        if (!$roleIdString) {
+            $post = $request->post();
+            $roleIdString = $post['roleId'] ?? null;
             if (!$post) {
                 throw new Exception('role id is required in the payload');
             }
-            $roleIdString = $post['roleId'];
         }
-        $roleId = $roleIdString;
-        // query the role table for the specific role id 
-        $role = Role::find($roleId);
+        $roleId = RoleId::fromString($roleIdString);
+        $role = Role::where(['id' => $roleId]);
         if (!$role) {
             throw new Exception(`role of this %roleId is not found`);
         }
+        $roleModel = $role->getAttributes();
+        unset($roleModel['password']);
         $request->attributes->set('role', $role);
         return $next($request);
     }
