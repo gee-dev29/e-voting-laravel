@@ -26,7 +26,6 @@ class Role extends Model
     }
 
     protected $fillable = ['roleName'];
-
     protected $table = 'role';
 
     public static function createRole(array $data)

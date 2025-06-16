@@ -100,7 +100,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->password;
     }
 
-    public function roleId(): array
+    public function roleId(): array|string
     {
         $rawRoleIds = $this->attributes['roleId'];
         $parsedRoleIds = [];
