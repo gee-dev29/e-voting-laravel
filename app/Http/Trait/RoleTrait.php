@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Trait;
 
-use App\Http\Id\RoleId;
 use App\Models\Role;
 
 trait RoleTrait
@@ -12,7 +11,7 @@ trait RoleTrait
   private function getRoleName(string $roleId): ?string
   {
     /** @var Role */
-    $role = Role::find($roleId);
+    $role = Role::where(['id' => $roleId]);
     return $role?->roleName();
   }
 }
