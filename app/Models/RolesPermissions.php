@@ -5,25 +5,42 @@ namespace App\Models;
 use App\Http\Id\PermissionId;
 use App\Http\Id\RolePermissionId;
 use Exception;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class RolesPermissions extends Model
 {
+    use HasFactory;
+
+    public $incrementing = false;
     protected $table = 'rolePermission';
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = Str::uuid();
+            }
+        });
+    }
     protected $fillable = [
         'roleId',
-        'permissionId',
+        'permissionIds',
     ];
 
     protected $cast = [
-        'permissionId'
+        'permissionIds'
     ];
+
+
 
     public static function AddPermissionsToRole(array $data)
     {
         Validator::make($data, [
-            'permissionId' => 'required|array',
+            'permissionIds' => 'required|array',
             'roleId' => 'required|string'
         ]);
 
@@ -38,7 +55,7 @@ class RolesPermissions extends Model
 
     public function permissionIds(): array
     {
-        $rawPermissionIds = $this->attributes['permissionId'];
+        $rawPermissionIds = $this->attributes['permissionIds'];
         $parsedPermissionIds = [];
         if (is_string($rawPermissionIds) && ($decoded = json_decode($rawPermissionIds, true)) !== null && is_array($decoded)) {
             $parsedPermissionIds = $decoded;
@@ -64,7 +81,7 @@ class RolesPermissions extends Model
     {
         return [
             'id' => $this->id,
-            'permissionId' => $this->permissionId,
+            'permissionIds' => $this->permissionId,
             'roleId' => $this->roleId
         ];
     }
