@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Domain\Id\PermissionId;
+use App\Http\Id\PermissionId as IdPermissionId;
 use App\Models\Permission;
 use Closure;
 use Exception;
@@ -27,7 +28,7 @@ class checkPermission
                     throw new Exception('Permission ID is required');
                 };
                 $permissionIdString = $post['permissionId'];
-                $permissionId = PermissionId::fromString($permissionIdString);
+                $permissionId = IdPermissionId::fromString($permissionIdString);
             } catch (\Throwable $th) {
                 throw new Exception($th->getMessage());
             }
