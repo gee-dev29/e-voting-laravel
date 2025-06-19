@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddRolePermissions;
 use App\Http\Controllers\AssignUserRole;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\ChangeUserPassword;
@@ -17,9 +18,9 @@ use App\Http\Controllers\GetUsers;
 use App\Http\Controllers\LoginUser;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\rolePermissionController;
 use App\Http\Controllers\UpdateUserDetails;
 use App\Http\Controllers\VerifyOTP;
+use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\CheckUser;
 use App\Http\Middleware\JwtAuthentication;
 use Illuminate\Support\Facades\Route;
@@ -55,21 +56,12 @@ Route::patch('/user/{userId}/update', UpdateUserDetails::class)->middleware([Jwt
 Route::patch('/user/{userId}/assign-role', AssignUserRole::class)->middleware([JwtAuthentication::class, CheckUser::class]);
 Route::get('/user/{userId}/user-role', GetUserRoles::class)->middleware([JwtAuthentication::class, CheckUser::class]);
 
-Route::middleware([
-  'check.user',
-])->group(function () {
-  Route::patch('/role/{roleId}/permissions', [RolePermissionController::class, 'addRolePermisssions']);
-});
-
 // role route
-Route::middleware([
-  // 'JwtAuthentication',
-  'check.role',
-])->group(function () {
-  Route::delete('/role/{roleId}/delete', DeleteRole::class);
-  Route::patch('/role/{roleId}/update', [RoleController::class, 'updateRole']);
-  Route::get('/role/{roleId}', GetRole::class);
-});
+Route::post('/role/{roleId}/permissions', AddRolePermissions::class)->middleware([JwtAuthentication::class, CheckRole::class]);
+
+Route::delete('/role/{roleId}/delete', DeleteRole::class)->middleware([JwtAuthentication::class, CheckRole::class]);
+Route::patch('/role/{roleId}/update',);
+Route::get('/role/{roleId}', GetRole::class);
 
 Route::post('/role', CreateRole::class)->middleware(JwtAuthentication::class);
 Route::get('/role', GetRoles::class)->middleware(JwtAuthentication::class);

@@ -14,8 +14,9 @@ class RolesPermissions extends Model
 {
     use HasFactory;
 
+    protected $keyType = 'string';
     public $incrementing = false;
-    protected $table = 'rolePermission';
+    protected $table = 'role_permission';
 
     protected static function boot()
     {
@@ -73,7 +74,7 @@ class RolesPermissions extends Model
             } catch (\Throwable $th) {
                 throw new Exception($th);
             }
-        }
+        }   
         return $permissionIdsObject;
     }
 

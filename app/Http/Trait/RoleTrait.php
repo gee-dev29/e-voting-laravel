@@ -11,7 +11,7 @@ trait RoleTrait
   private function getRoleName(string $roleId): ?string
   {
     /** @var Role */
-    $role = Role::where(['id' => $roleId]);
+    $role = Role::find($roleId);
     return $role?->roleName();
   }
 }

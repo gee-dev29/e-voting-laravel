@@ -27,7 +27,7 @@ class CreateRolePermissionsRequest extends FormRequest
                 'required',
                 'string'
             ],
-            'permissionId' =>
+            'permissionIds' =>
             [
                 'required',
                 'array'
@@ -39,7 +39,7 @@ class CreateRolePermissionsRequest extends FormRequest
     {
         return [
             'roleId.string' => "role ID must be a UUID",
-            'permissionId.array' => "Permission IDs must be an array of Permissions"
+            'permissionIds.array' => "Permission IDs must be an array of Permissions"
         ];
     }
 }

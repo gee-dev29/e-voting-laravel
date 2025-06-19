@@ -6,13 +6,10 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\ResponseInterface\ApiResponse;
 use App\Http\ResponseInterface\StatusCode;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
-class changeUserPassword extends Controller
+class ChangeUserPassword extends Controller
 {
-    
-
-    public function changeUserPassword(CreateUserRequest $request): JsonResponse
+    public function __invoke(CreateUserRequest $request): JsonResponse
     {
         try {
             /** @var User */
