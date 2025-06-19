@@ -13,10 +13,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('role_permission', function (Blueprint $table) {
-            $table->uuid()->primary();
-            $table->string('roleId');
-            $table->string('permissionId');
+            $table->uuid('id')->primary();
+            $table->foreignId('roleId');
+            $table->json('permissionIds');
             $table->timestamps();
+        });
+
+        Schema::table('role_permission', function (Blueprint $table) {
+            // Check if the old column exists before renaming
+            if (Schema::hasColumn('roles_permissions', 'permissionId')) {
+                $table->renameColumn('permissionId', 'permissionIds');
+            }
         });
     }
 
@@ -26,6 +33,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('role_permission');
+        Schema::table('role_permission', function (Blueprint $table) {
+            // Check if the new column exists before renaming back
+            if (Schema::hasColumn('roles_permissions', 'permissionIds')) {
+                $table->renameColumn('permissionIds', 'permissionId');
+            }
+        });
     }
 
     // public function roleId(): RoleId
