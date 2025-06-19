@@ -17,22 +17,33 @@ class AddRolePermissions extends Controller
     {
         try {
             $roleId = $request->attributes->get('role');
-            $post = $request->post();
-            $validator = $request->validated();
-            foreach ($post['permissionIds'] as $permissionIdString) {
+            $validatedData = $request->validated();
+            $permissionIds = $validatedData['permissionIds'];
+            $addedPermissionIds = [];
+            foreach ($permissionIds as $permissionIdString) {
                 $permissionId = PermissionId::fromString($permissionIdString);
-                $permission = Permission::where(['id' => $permissionId]);
+                $permission = Permission::where(['id' => $permissionId->toString()])->first();
                 if (!$permission) {
                     throw new Exception("Permission not found", 1);
                 }
-                $rolePermission = RolesPermissions::AddPermissionsToRole(array_merge($validator, [
+                $rolePermission = RolesPermissions::AddPermissionsToRole([
                     'roleId' => $roleId,
-                    'permissionId' => $permissionId
-                ]));
+                    'permissionIds' => $permissionId->toString()
+                ]);
                 $rolePermission->save();
-                Log::info('Permission(s) added role successfully', ['userId' => $rolePermission->id()]);
-                return ApiResponse::success('Permission(s) added role successfully', StatusCode::CREATED);
+                $addedPermissionIds[] = $permissionIdString;
+                Log::info('Permission added to role successfully', [
+                    'roleId' => $roleId,
+                    'permissionIds' => $permissionIdString
+                ]);
             }
+            if (empty($addedPermissionIds)) {
+                return ApiResponse::error('No valid permissions provided or added.', 'No permissions were processed.', StatusCode::BAD_REQUEST);
+            }
+
+            return ApiResponse::success('Permission(s) added to role successfully', StatusCode::CREATED, [
+                'added_permissions' => $addedPermissionIds
+            ]);
         } catch (\Throwable $th) {
             Log::error('Error creating user', ['error' => $th->getMessage()]);
             throw ApiResponse::error('Error creating user', $th->getMessage(), StatusCode::BAD_REQUEST);
