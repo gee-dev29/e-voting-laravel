@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class Permission extends Model
 {
-    protected $table = 'permission';
+    protected $table = 'permissions';
     protected $keyType = 'string';
     public $incrementing = false;
 
