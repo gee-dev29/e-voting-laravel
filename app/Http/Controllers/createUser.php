@@ -16,10 +16,10 @@ class CreateUser extends Controller
             $post = $request->all();
             $user = User::createUser($post);
             $user->save();
-            Log::info('User created successfully', ['userId' => $user->id()]);
+            // Log::info('User created successfully', ['userId' => $user->id()]);
             return ApiResponse::success('User created successfully', StatusCode::CREATED);
         } catch (\Throwable $th) {
-            Log::error('Error creating user', ['error' => $th->getMessage()]);
+            // Log::error('Error creating user', ['error' => $th->getMessage()]);
             return ApiResponse::error('Error creating user', $th->getMessage(), StatusCode::BAD_REQUEST);
         }
     }
