@@ -15,10 +15,11 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('firstName');
             $table->string('lastName');
+            $table->uuid('roleId');
             $table->string('email')->unique();
             $table->string('middleName')->nullable();
             $table->string('phone')->nullable();
-            $table->uuid('roleId')->nullable();
+            $table->foreign('roleId')->references('id')->on('role');
             $table->integer('otp')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
