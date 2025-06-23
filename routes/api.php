@@ -63,7 +63,7 @@ Route::delete('/role/{roleId}/delete', DeleteRole::class)->middleware([JwtAuthen
 Route::patch('/role/{roleId}/update',);
 Route::get('/role/{roleId}', GetRole::class);
 
-Route::post('/role', CreateRole::class)->middleware(JwtAuthentication::class);
+Route::post('/role', CreateRole::class);
 Route::get('/role', GetRoles::class)->middleware(JwtAuthentication::class);
 
 // permissions route
