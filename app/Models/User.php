@@ -152,7 +152,7 @@ final class User extends Authenticatable implements MustVerifyEmail
     public function data(): array
     {
         return [
-            'id' => $this->id,
+            'userId' => $this->id,
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'email' => $this->email,
