@@ -13,6 +13,7 @@ class CreateUser extends Controller
     public function __invoke(CreateUserRequest $request)
     {
         try {
+            var_dump('hi');
             $post = $request->all();
             $user = User::createUser($post);
             $user->save();
