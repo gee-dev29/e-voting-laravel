@@ -13,10 +13,10 @@ class CreateUser extends Controller
     public function __invoke(CreateUserRequest $request)
     {
         try {
-            var_dump('hi');
             $post = $request->all();
             $user = User::createUser($post);
             $user->save();
+            var_dump('hi zzzzzz');
             // Log::info('User created successfully', ['userId' => $user->id()]);
             return ApiResponse::success('User created successfully', StatusCode::CREATED);
         } catch (\Throwable $th) {
