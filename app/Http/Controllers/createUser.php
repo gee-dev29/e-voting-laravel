@@ -14,13 +14,13 @@ class CreateUser extends Controller
     {
         try {
             $post = $request->all();
+            /** @var User */
             $user = User::createUser($post);
             $user->save();
-            var_dump('hi zzzzzz');
-            // Log::info('User created successfully', ['userId' => $user->id()]);
+            Log::info('User created successfully', ['userId' => $user->userId()]);
             return ApiResponse::success('User created successfully', StatusCode::CREATED);
         } catch (\Throwable $th) {
-            // Log::error('Error creating user', ['error' => $th->getMessage()]);
+            Log::error('Error creating user', ['error' => $th->getMessage()]);
             return ApiResponse::error('Error creating user', $th->getMessage(), StatusCode::BAD_REQUEST);
         }
     }
