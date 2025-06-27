@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('middleName')->nullable();
             $table->string('phone')->nullable();
             $table->foreign('roleId')->references('id')->on('role');
-            $table->integer('otp')->nullable();
+            $table->json('otp')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
