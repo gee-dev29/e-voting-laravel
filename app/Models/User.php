@@ -50,7 +50,8 @@ final class User extends Authenticatable implements MustVerifyEmail
             'firstName' => 'required|string',
             'lastName' => 'required|string',
             'email' => 'required|string',
-            'password' => 'required|string'
+            'password' => 'required|string',
+            'roleId' => 'required|array'
         ]);
 
         $validatedData = $validator->validate();
@@ -129,6 +130,11 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->role;
     }
 
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'userId', 'roleId');
+    }
+
     // public function hasRole(string $roleName): bool
     // {
     //     return $this->role && $this->role->getRoleName() === $roleName;
@@ -144,7 +150,7 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->email;
     }
 
-    public function id(): UserId
+    public function userId(): UserId
     {
         return UserId::fromString($this->id);
     }
