@@ -6,6 +6,7 @@ use App\Casts\OtpCast;
 use App\Http\Id\RoleId;
 use App\Http\Id\UserId;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Query\Expr\Select;
 use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -135,10 +136,10 @@ final class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsToMany(Role::class, 'role_user', 'userId', 'roleId');
     }
 
-    // public function hasRole(string $roleName): bool
-    // {
-    //     return $this->role && $this->role->getRoleName() === $roleName;
-    // }
+    public function hasRole(string $roleName): bool
+    {
+        return $this->role && $this->role->getRoleName() === $roleName;
+    }
 
     // public function hasPermission(string $permissionName): bool
     // {
@@ -163,7 +164,6 @@ final class User extends Authenticatable implements MustVerifyEmail
             'lastName' => $this->lastName,
             'email' => $this->email,
             'phone' => $this->phone ?? null,
-            'roleId' => $this->roleId ?? [],
             'middleName' => $this->middleName ?? null,
         ];
     }
