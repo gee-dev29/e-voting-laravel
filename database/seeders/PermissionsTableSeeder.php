@@ -19,7 +19,7 @@ class PermissionsTableSeeder extends Seeder
                 $firstLine = false;
                 continue;
             }
-            DB::table('permissions')->insert([
+            DB::table('permission')->insert([
                 'id' => $data[0],
                 'permissionName' => $data[1],
                 'description' => $data[2],
