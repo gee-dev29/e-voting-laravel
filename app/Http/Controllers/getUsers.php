@@ -28,10 +28,7 @@ class GetUsers extends Controller
         $users = $users->skip($skip)->take($limit)->get();
         foreach ($users as $user) {
             $roleNames = [];
-            $roleIds = $user->roles();
-            foreach ($roleIds as $roleId) {
-                $roleNames[] = $this->getRoleName($roleId);
-            }
+            $roleNames[] = $this->getUserRole($user->id);
             $data[] = array_merge($user->data(), [
                 "roleName" => implode(', ', $roleNames)
             ]);
