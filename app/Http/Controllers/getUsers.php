@@ -28,7 +28,7 @@ class GetUsers extends Controller
         $users = $users->skip($skip)->take($limit)->get();
         foreach ($users as $user) {
             $roleNames = [];
-            $roleIds = $user?->roleId();
+            $roleIds = $user->roles();
             foreach ($roleIds as $roleId) {
                 $roleNames[] = $this->getRoleName($roleId);
             }
