@@ -21,21 +21,24 @@ class GetUsers extends Controller
         $filters = array_intersect($allowed, $requested);
 
         /**@var User */
-        $users = User::query();
+        $usersQuery = User::query();
         foreach ($filters as $filter) {
-            $users->where($filter, $query[$filter]);
+            $usersQuery->where($filter, $query[$filter]);
         }
-        $users = $users->skip($skip)->take($limit)->get();
+        $users = $usersQuery->skip($skip)->take($limit)->get();
         foreach ($users as $user) {
             $roleNames = [];
-            $roleNames[] = $this->getUserRole($user->id);
+            $userRoles = $this->getUserRole($user->userId());
+            foreach ($userRoles as $roleEntry) {
+                $roleNames[] = $roleEntry['roleName'];
+            }
             $data[] = array_merge($user->data(), [
                 "roleName" => implode(', ', $roleNames)
             ]);
         }
         return new JsonResponse(
             [
-                'totalRecords' => count($data),
+                'totalRecords' => $usersQuery->count(),
                 'data' => $data
             ]
         );
