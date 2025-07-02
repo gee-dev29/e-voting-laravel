@@ -13,8 +13,13 @@ class GetUser extends Controller
     {
         /** @var User $user */
         $user = $request->attributes->get('user');
+        $roleNames = [];
+        $userRoles = $this->getUserRole($user->userId());
+        foreach ($userRoles as $userRole) {
+            $roleNames[] = $userRole['roleName'];
+        }
         return new JsonResponse(array_merge($user->data(), [
-            "roleName" => $this->getRoleName($user->roleId())
+            "roleName" => implode(',', $roleNames)
         ]));
     }
 }
