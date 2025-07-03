@@ -50,7 +50,7 @@ class Role extends Model
         return $this->belongsToMany(
             Permission::class
         );
-    } 
+    }
 
     // Method to check if role has a specific permission
     public function hasPermission($permissionName)
