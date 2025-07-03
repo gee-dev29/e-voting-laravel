@@ -35,7 +35,7 @@ class CheckUser
       throw UserException::notFound();
     }
     unset($userModel['password']);
-    $request->attributes->set('user', $user);
+    $request->attributes->set('user', $user); 
     return $next($request);
   }
 }
