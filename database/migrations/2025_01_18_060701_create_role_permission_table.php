@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Id\RoleId;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,18 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('role_permission', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->foreignId('roleId');
-            $table->json('permissionIds');
-            $table->timestamps();
-        });
+        // Drop the old table if it exists (important!)
+        Schema::dropIfExists('role_permission');
 
-        Schema::table('role_permission', function (Blueprint $table) {
-            // Check if the old column exists before renaming
-            if (Schema::hasColumn('roles_permissions', 'permissionId')) {
-                $table->renameColumn('permissionId', 'permissionIds');
-            }
+        // Create the new, correctly structured pivot table
+        Schema::create('role_permission', function (Blueprint $table) {
+            // Using unsignedBigInteger for consistency with `id()` and `foreignId()`
+            $table->unsignedBigInteger('roleId');
+            $table->unsignedBigInteger('permissionId');
+
+            // Define foreign key constraints
+            $table->foreign('roleId')->references('id')->on('role')->onDelete('cascade');
+            $table->foreign('permissionId')->references('id')->on('permissions')->onDelete('cascade');
+
+            // Set a composite primary key to ensure uniqueness for each role-permission pair
+            $table->primary(['roleId', 'permissionId']);
+
+            $table->timestamps(); // Optional, but good practice for auditing
         });
     }
 
@@ -33,16 +37,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('role_permission');
-        Schema::table('role_permission', function (Blueprint $table) {
-            // Check if the new column exists before renaming back
-            if (Schema::hasColumn('roles_permissions', 'permissionIds')) {
-                $table->renameColumn('permissionIds', 'permissionId');
-            }
-        });
     }
-
-    // public function roleId(): RoleId
-    // {
-    //     return RoleId::fromString();
-    // }
 };
