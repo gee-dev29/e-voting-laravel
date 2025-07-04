@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Http\Id\RoleId;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -40,12 +42,12 @@ class Role extends Model
         return $role;
     }
 
-    public function users() 
+    public function users()
     {
         return $this->belongsToMany(User::class, 'role_user', 'roleId', 'userId');
     }
 
-    public function permissions()
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(
             Permission::class
