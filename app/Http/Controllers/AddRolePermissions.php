@@ -9,6 +9,7 @@ use App\Http\ResponseInterface\StatusCode;
 use App\Models\Permission;
 use App\Models\RolesPermissions;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AddRolePermissions extends Controller
@@ -20,17 +21,21 @@ class AddRolePermissions extends Controller
             $validatedData = $request->validated();
             $permissionIds = $validatedData['permissionIds'];
             $addedPermissionIds = [];
-            foreach ($permissionIds as $permissionIdString) {
-                $permissionId = PermissionId::fromString($permissionIdString);
-                $permission = Permission::where(['id' => $permissionId->toString()])->first();
-                if (!$permission) {
-                    throw new Exception("Permission not found", 1);
+            foreach ($permissionIds as $permissionId) {
+                $permissionId = PermissionId::fromString($permissionId);
+                $addedPermissionIds[] = $permissionId;
+                // $permission = Permission::where(['id' => $permissionId->toString()])->first();
+                // if (!$permission) {
+                //     throw new Exception("Permission not found", 1);
+                // }
+                // $rolePermission = RolesPermissions::AddPermissionsToRole([
+                //     'roleId' => $roleId,
+                //     'permissionIds' => $permissionId->toString()
+                // ]);
+                $existingPermissionIds = DB::table('role_permission')->whereIn('permissionId', $permissionId->toString())->pluck('permissionId')->toArray();
+                if (count($existingPermissionIds) !== count($addedPermissionIds)) {
+                    # code...
                 }
-                $rolePermission = RolesPermissions::AddPermissionsToRole([
-                    'roleId' => $roleId,
-                    'permissionIds' => $permissionId->toString()
-                ]);
-                $rolePermission->save();
                 $addedPermissionIds[] = $permissionIdString;
                 Log::info('Permission added to role successfully', [
                     'roleId' => $roleId,
