@@ -57,7 +57,7 @@ Route::patch('/user/{userId}/assign-role', AssignUserRole::class)->middleware([J
 Route::get('/user/{userId}/user-role', GetUserRoles::class)->middleware([JwtAuthentication::class, CheckUser::class]);
 
 // role route
-Route::post('/role/{roleId}/permissions', AddRolePermissions::class)->middleware([JwtAuthentication::class, CheckRole::class]);
+Route::post('/role/permissions', AddRolePermissions::class)->middleware([JwtAuthentication::class, CheckRole::class]);
 
 Route::delete('/role/{roleId}/delete', DeleteRole::class)->middleware([JwtAuthentication::class, CheckRole::class]);
 Route::patch('/role/{roleId}/update',);
