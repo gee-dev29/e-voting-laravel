@@ -27,12 +27,10 @@ class CheckRole
             }
         }
         $roleId = RoleId::fromString($roleIdString);
-        $role = Role::where(['id' => $roleId]);
+        $role = Role::where(['id' => $roleId])->first()->get();
         if (!$role) {
             throw new Exception(`role of this %roleId is not found`);
         }
-        $roleModel = $role->getAttributes();
-        unset($roleModel['password']);
         $request->attributes->set('role', $role);
         return $next($request);
     }
