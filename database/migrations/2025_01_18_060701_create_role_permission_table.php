@@ -14,16 +14,13 @@ return new class extends Migration
         Schema::dropIfExists('role_permission');
 
         Schema::create('role_permission', function (Blueprint $table) {
-            $table->unsignedBigInteger('roleId');
-            $table->unsignedBigInteger('permissionId');
-
+            $table->uuid('roleId');
             $table->foreign('roleId')->references('id')->on('role')->onDelete('cascade');
-            $table->foreign('permissionId')->references('id')->on('permissions')->onDelete('cascade');
+            $table->uuid('permissionId');
+            $table->foreign('permissionId')->references('id')->on('permission')->onDelete('cascade');
 
             // Set a composite primary key to ensure uniqueness for each role-permission pair
             $table->primary(['roleId', 'permissionId']);
-
-            $table->timestamps();
         });
     }
 
