@@ -27,7 +27,7 @@ class CheckRole
             }
         }
         $roleId = RoleId::fromString($roleIdString);
-        $role = Role::where(['id' => $roleId])->first()->get();
+        $role = Role::where(['id' => $roleId])->first();
         if (!$role) {
             throw new Exception(`role of this %roleId is not found`);
         }
