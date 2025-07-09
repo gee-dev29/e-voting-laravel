@@ -68,7 +68,7 @@ Route::get('/role', GetRoles::class)->middleware(JwtAuthentication::class);
 
 // permissions route
 Route::post('/permission', [
-  PermissionController::class,
+  PermissionController::class, 
   'createPermission'
 ]);
 
