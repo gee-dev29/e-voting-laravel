@@ -12,7 +12,6 @@ class AddRolePermissions extends Controller
 {
     public function __invoke(Request $request)
     {
-        // try {
         $role = $request->attributes->get('role');
         $validatedData = $request->validate([
             'permissionIds' => 'required|array',
@@ -38,8 +37,5 @@ class AddRolePermissions extends Controller
             Log::info('Permission added to role successfully');
             return ApiResponse::success('Permission(s) successfully attached to role', StatusCode::CREATED);
         }
-        // } catch (\Throwable $th) {
-        //     return ApiResponse::error('An Internal server error occured while processing permissions', StatusCode::INTERNAL_SERVER_ERROR);
-        // }
     }
 }
