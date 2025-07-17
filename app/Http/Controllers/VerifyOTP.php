@@ -27,7 +27,6 @@ class VerifyOTP extends Controller
             $user->otp = null;
             $user->save();
 
-            // return ApiResponse::success('OTP verified successfully', StatusCode::OK);
             return $next($request);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
