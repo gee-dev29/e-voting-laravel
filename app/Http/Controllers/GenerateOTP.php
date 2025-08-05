@@ -12,7 +12,7 @@ class GenerateOTP extends Controller
     {
         try {
             $user = $request->attributes->get('user');
-            $user->otp = (object) [
+            $user->otp = (object) [ 
                 'value' => rand(100000, 999999),
                 'createdOn' => now()->toISOString(),
                 'expiresOn' => now()->addMinutes(10)->toISOString(),
