@@ -14,7 +14,7 @@ class ChangeUserPassword extends Controller
         try { 
             /** @var User */
             $user = $request->attributes->get('user');
-            $post = $request->all();
+            $post = $request->all(); 
             $user->changePassword($user, $post);
             return ApiResponse::success('User updated successfully', StatusCode::OK);
         } catch (\Throwable $e) {
