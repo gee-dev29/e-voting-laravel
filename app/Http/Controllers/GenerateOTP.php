@@ -17,7 +17,7 @@ class GenerateOTP extends Controller
                 'createdOn' => now()->toISOString(),
                 'expiresOn' => now()->addMinutes(10)->toISOString(),
             ];
-            $user->save();
+            $user->save(); 
             return ApiResponse::success('OTP generated successfully.', StatusCode::OK);
         } catch (\Throwable $e) {
             return response()->json(['error' => $e->getMessage()], 400);
