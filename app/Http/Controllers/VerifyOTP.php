@@ -25,7 +25,7 @@ class VerifyOTP extends Controller
         try {
             $this->otpValidator->validateOtp($user, $request->input('otp'));
             $user->otp = null;
-            $user->save();
+            $user->save(); 
 
             return $next($request);
         } catch (\Exception $e) {
