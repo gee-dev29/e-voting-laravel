@@ -18,7 +18,7 @@ class VerifyOTP extends Controller
         $this->otpValidator = $otpValidator;
     }
     private function __invoke(Request $request, Closure $next)
-    {
+    { 
         $user = $request->attributes->get('user');
         $request->validate(['otp' => 'required|string']);
 
