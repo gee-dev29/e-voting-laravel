@@ -16,7 +16,7 @@ class LoginUser extends Controller
             'email' => $user->email,
             'iat' => time(),
             'exp' => time() + 86400
-        ];
+        ]; 
         $token = JWT::encode($payload, env('JWT_SECRET'), 'HS256');
         return response()->json([
             'message' => 'Login successful',
