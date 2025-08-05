@@ -11,7 +11,7 @@ class ChangeUserPassword extends Controller
 {
     public function __invoke(CreateUserRequest $request): JsonResponse
     {
-        try {
+        try { 
             /** @var User */
             $user = $request->attributes->get('user');
             $post = $request->all();
